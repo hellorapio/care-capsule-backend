@@ -1,0 +1,82 @@
+name: Testing and building docker image
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  compile-app:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: fetching code
+        uses: actions/checkout@v3
+
+      - name: installing dependencies
+        run: echo "installing dependencies"
+        # Just mocking the installation
+        # run: npm install
+
+      - name: running tests
+        run: echo "Tests Done"
+        # Just mocking the Testing
+        # run: npm run test
+
+      - name: Notify on success
+        if: success()
+        uses: tsickert/discord-webhook@v6.0.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_HOOK }}
+          content: "Tests succeeded, continuing to build and push docker image :)"
+
+      - name: Notify on failure
+        if: failure()
+        uses: tsickert/discord-webhook@v6.0.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_HOOK }}
+          content: "Tests didn't succeed as expected :("
+
+  docker:
+    needs: compile-app
+    runs-on: ubuntu-latest
+    steps:
+      - name: fetching code
+        uses: actions/checkout@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASS }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/spaxet:latest
+            ${{ secrets.DOCKER_USERNAME }}/spaxet:${{ github.sha }}
+          file: Dockerfile
+          cache-from: type=gha
+          cache-to: type=gha,mode=max`
+
+      - name: Notify on success
+        if: success()
+        uses: tsickert/discord-webhook@v6.0.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_HOOK }}
+          content: "Spaxet Docker image Succeeded :)"
+
+      - name: Notify on failure
+        if: failure()
+        uses: tsickert/discord-webhook@v6.0.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_HOOK }}
+          content: "Spaxet Docker image Failed :("

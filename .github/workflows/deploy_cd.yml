@@ -1,0 +1,53 @@
+name: Deploy to Hetzner VM
+
+on:
+  workflow_run:
+    workflows: ["Testing and building docker image"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up SSH
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key
+          chmod 600 private_key
+
+      - name: Copy files to Hetzner VM
+        env:
+          SSH_USER: ${{ secrets.SSH_USERNAME }}
+          SSH_HOST: ${{ secrets.SSH_IP }}
+        run: |
+          scp -i private_key -o StrictHostKeyChecking=no compose.yml $SSH_USER@$SSH_HOST:~/
+          scp -i private_key -o StrictHostKeyChecking=no Dockerfile.nginx $SSH_USER@$SSH_HOST:~/
+          scp -i private_key -o StrictHostKeyChecking=no nginx.conf $SSH_USER@$SSH_HOST:~/
+
+      - name: Deploy Application
+        env:
+          SSH_USER: ${{ secrets.SSH_USERNAME }}
+          SSH_HOST: ${{ secrets.SSH_IP }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        run: |
+          ssh -i private_key -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << 'EOF'
+            sudo docker-compose pull
+            sudo docker-compose up --build -d
+          EOF
+
+      - name: Notify Deployment Success
+        if: success()
+        uses: tsickert/discord-webhook@v6.0.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_HOOK }}
+          content: "Deployment to Hetzner VM succeeded!"
+
+      - name: Notify Deployment Failure
+        if: failure()
+        uses: tsickert/discord-webhook@v6.0.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_HOOK }}
+          content: "Deployment to Hetzner VM failed :("
