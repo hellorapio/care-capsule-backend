@@ -1,4 +1,4 @@
-FROM node:lts AS builder
+FROM node:lts
 
 WORKDIR /app
 
@@ -8,5 +8,8 @@ RUN npm install --legacy-peer-deps
 
 COPY . .
 
+RUN npm run build
+
 EXPOSE 3000
-CMD ["npm", "run", "start:dev"]
+
+CMD ["sh", "run.sh"]
