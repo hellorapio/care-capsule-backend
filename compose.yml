@@ -1,6 +1,6 @@
 services:
   node:
-    image: ${{ secrets.ACR_LOGIN_SERVER }}/carecapsule:latest
+    image: carecapsule.azurecr.io/carecapsule:latest
     env_file:
       - ./.env
     restart: always
