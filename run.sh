@@ -16,4 +16,4 @@ npm run db:essential
 # npx knex migrate:latest
 
 echo "Starting the backend server..."
-npm run start
+npm run start:prod
