@@ -54,9 +54,8 @@ jobs:
             
             # Pull and deploy
             sudo docker compose down
-            sudo docker rm -f \$(sudo docker ps -q) || true
-            sudo docker compose pull
-            sudo docker compose up -d
+            sudo docker compose pull node
+            sudo docker compose up -d --force-recreate node
             
             # Cleanup
             sudo docker system prune -f
