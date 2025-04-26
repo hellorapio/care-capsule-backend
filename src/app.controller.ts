@@ -6,7 +6,7 @@ import Public from './decorators/Public.decorator';
 export class AppController {
   @Get('health')
   health() {
-    return { status: 'server is live last version rapio at 11 AM' };
+    return { status: 'server is live' };
   }
 
   @Post('health')
