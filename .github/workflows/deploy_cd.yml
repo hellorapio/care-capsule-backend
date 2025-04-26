@@ -1,53 +1,61 @@
-name: Deploy to Hetzner VM
+name: Deploy to Azure VM
 
 on:
   workflow_run:
-    workflows: ["Testing and building docker image"]
+    workflows: ['Testing and building docker image']
     types:
       - completed
 
 jobs:
   deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+
+      - name: Process compose file
+        run: |
+          # Replace GitHub Actions variables with actual values
+          sed -i "s|\${{ secrets.ACR_LOGIN_SERVER }}|${{ secrets.ACR_LOGIN_SERVER }}|g" compose.yml
 
       - name: Set up SSH
         run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key
-          chmod 600 private_key
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SSH_IP }} >> ~/.ssh/known_hosts
 
-      - name: Copy files to Hetzner VM
+      - name: Copy deployment files to Azure VM
         env:
           SSH_USER: ${{ secrets.SSH_USERNAME }}
           SSH_HOST: ${{ secrets.SSH_IP }}
         run: |
-          scp -i private_key -o StrictHostKeyChecking=no compose.yml $SSH_USER@$SSH_HOST:~/
-          scp -i private_key -o StrictHostKeyChecking=no Dockerfile.nginx $SSH_USER@$SSH_HOST:~/
-          scp -i private_key -o StrictHostKeyChecking=no nginx.conf $SSH_USER@$SSH_HOST:~/
+          scp -i ~/.ssh/id_rsa compose.yml $SSH_USER@$SSH_HOST:~/
+          scp -i ~/.ssh/id_rsa Dockerfile.nginx $SSH_USER@$SSH_HOST:~/
+          scp -i ~/.ssh/id_rsa nginx.conf $SSH_USER@$SSH_HOST:~/
 
-      - name: Deploy Application
+          # Copy .env file if it exists
+          if [ -f .env ]; then
+            scp -i ~/.ssh/id_rsa .env $SSH_USER@$SSH_HOST:~/
+          fi
+
+      - name: Login to Azure Container Registry on VM and Deploy
         env:
           SSH_USER: ${{ secrets.SSH_USERNAME }}
           SSH_HOST: ${{ secrets.SSH_IP }}
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
+          ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
+          ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
         run: |
-          ssh -i private_key -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << 'EOF'
-            sudo docker-compose pull
-            sudo docker-compose up --build -d
+          ssh -i ~/.ssh/id_rsa $SSH_USER@$SSH_HOST << EOF
+            # Login to Azure Container Registry
+            echo "${{ secrets.ACR_PASSWORD }}" | sudo docker login ${{ secrets.ACR_LOGIN_SERVER }} -u ${{ secrets.ACR_USERNAME }} --password-stdin
+            
+            # Pull and deploy
+            sudo docker compose pull
+            sudo docker compose up -d
+            
+            # Cleanup
+            sudo docker system prune -f
           EOF
-
-      - name: Notify Deployment Success
-        if: success()
-        uses: tsickert/discord-webhook@v6.0.0
-        with:
-          webhook-url: ${{ secrets.DISCORD_HOOK }}
-          content: "Deployment to Hetzner VM succeeded!"
-
-      - name: Notify Deployment Failure
-        if: failure()
-        uses: tsickert/discord-webhook@v6.0.0
-        with:
-          webhook-url: ${{ secrets.DISCORD_HOOK }}
-          content: "Deployment to Hetzner VM failed :("

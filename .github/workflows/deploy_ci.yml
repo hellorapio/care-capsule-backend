@@ -22,20 +22,6 @@ jobs:
         # Just mocking the Testing
         # run: npm run test
 
-      - name: Notify on success
-        if: success()
-        uses: tsickert/discord-webhook@v6.0.0
-        with:
-          webhook-url: ${{ secrets.DISCORD_HOOK }}
-          content: "Tests succeeded, continuing to build and push docker image :)"
-
-      - name: Notify on failure
-        if: failure()
-        uses: tsickert/discord-webhook@v6.0.0
-        with:
-          webhook-url: ${{ secrets.DISCORD_HOOK }}
-          content: "Tests didn't succeed as expected :("
-
   docker:
     needs: compile-app
     runs-on: ubuntu-latest
@@ -49,11 +35,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
+      - name: Login to Azure Container Registry
+        uses: azure/docker-login@v1
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASS }}
+          login-server: ${{ secrets.ACR_LOGIN_SERVER }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
 
       - name: Build and push
         uses: docker/build-push-action@v6
@@ -61,22 +48,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/spaxet:latest
-            ${{ secrets.DOCKER_USERNAME }}/spaxet:${{ github.sha }}
+            ${{ secrets.ACR_LOGIN_SERVER }}/carecapsule:latest
+            ${{ secrets.ACR_LOGIN_SERVER }}/carecapsule:${{ github.sha }}
           file: Dockerfile
           cache-from: type=gha
-          cache-to: type=gha,mode=max`
-
-      - name: Notify on success
-        if: success()
-        uses: tsickert/discord-webhook@v6.0.0
-        with:
-          webhook-url: ${{ secrets.DISCORD_HOOK }}
-          content: "Spaxet Docker image Succeeded :)"
-
-      - name: Notify on failure
-        if: failure()
-        uses: tsickert/discord-webhook@v6.0.0
-        with:
-          webhook-url: ${{ secrets.DISCORD_HOOK }}
-          content: "Spaxet Docker image Failed :("
+          cache-to: type=gha,mode=max

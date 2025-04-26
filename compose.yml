@@ -1,8 +1,6 @@
 services:
   node:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ${{ secrets.ACR_LOGIN_SERVER }}/carecapsule:latest
     env_file:
       - ./.env
     restart: always
