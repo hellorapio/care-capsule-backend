@@ -51,5 +51,3 @@ jobs:
             ${{ secrets.ACR_LOGIN_SERVER }}/carecapsule:latest
             ${{ secrets.ACR_LOGIN_SERVER }}/carecapsule:${{ github.sha }}
           file: Dockerfile
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
