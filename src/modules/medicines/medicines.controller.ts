@@ -22,7 +22,8 @@ import { CreateMedicineDto, UpdateMedicineDto } from './dtos/medicine.dto';
 //   UpdatePharmacyMedicineDto,
 // } from './dtos/pharmacy-medicine.dto';
 import { MedicinesService } from './medicines.service';
-
+import Public from 'src/decorators/Public.decorator';
+@Public()
 @Controller('medicines')
 export class MedicinesController {
   constructor(

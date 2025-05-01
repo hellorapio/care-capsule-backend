@@ -18,7 +18,9 @@ import { PharmaciesService } from './pharmacies.service';
 import User from 'src/decorators/User.decorator';
 import { CreatePharmacyDto, UpdatePharmacyDto } from './dtos/pharmacy.dto';
 import { res } from 'src/utils/utils';
+import Public from 'src/decorators/Public.decorator';
 
+@Public()
 @Controller('pharmacies')
 export class PharmaciesController {
   constructor(private readonly pharmaciesService: PharmaciesService) {}
