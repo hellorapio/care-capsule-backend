@@ -69,16 +69,6 @@ export const pharmaciesTable = pgTable('pharmacies', {
     .$onUpdate(() => new Date()),
 });
 
-export const categoriesTable = pgTable('categories', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  name: varchar('name', { length: 100 }).notNull().unique(),
-  description: text('description'),
-  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
-  updatedAt: timestamp('updated_at')
-    .defaultNow()
-    .$onUpdate(() => new Date()),
-});
-
 export const medicinesTable = pgTable('medicines', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: varchar('name', { length: 100 }).notNull(),
@@ -86,7 +76,7 @@ export const medicinesTable = pgTable('medicines', {
   price: decimal('price', { precision: 10, scale: 2 }).notNull(),
   image: text('image'),
   substance: varchar('substance', { length: 100 }),
-  categoryId: uuid('category_id').references(() => categoriesTable.id),
+  category: varchar('category', { length: 100 }),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
   updatedAt: timestamp('updated_at')
     .defaultNow()
@@ -130,6 +120,29 @@ export const articleTagsTable = pgTable(
   (table) => {
     return {
       pk: primaryKey({ columns: [table.articleId, table.tagId] }),
+    };
+  },
+);
+
+export const wishlistTable = pgTable(
+  'wishlist',
+  {
+    userId: uuid('user_id')
+      .references(() => usersTable.id, { onDelete: 'cascade' })
+      .notNull()
+      .unique(),
+    medicineId: uuid('medicine_id')
+      .references(() => medicinesTable.id, { onDelete: 'cascade' })
+      .notNull()
+      .unique(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => {
+    return {
+      pk: primaryKey({ columns: [table.userId, table.medicineId] }),
     };
   },
 );

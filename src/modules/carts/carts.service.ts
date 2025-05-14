@@ -19,10 +19,8 @@ export class CartsService extends DatabaseRepository {
   }
 
   async findOrCreateCart(userId: string) {
-    // Try to find existing cart
     let cart = await this.findFirst(eq(cartsTable.userId, userId));
 
-    // If no cart exists, create one
     if (!cart) {
       cart = await this.create({
         userId,
@@ -34,17 +32,11 @@ export class CartsService extends DatabaseRepository {
   }
 
   async getCartWithItems(userId: string) {
-    // Find or create cart
     const cart = await this.findOrCreateCart(userId);
 
-    // Get cart items with medicine details
     const cartItems = await this.con
       .select({
-        cartItem: {
-          cartId: cartItemsTable.cartId,
-          medicineId: cartItemsTable.medicineId,
-          quantity: cartItemsTable.quantity,
-        },
+        quantity: cartItemsTable.quantity,
         medicine: {
           id: medicinesTable.id,
           name: medicinesTable.name,
@@ -60,10 +52,9 @@ export class CartsService extends DatabaseRepository {
       )
       .where(eq(cartItemsTable.cartId, cart.id));
 
-    // Calculate total price
     let totalPrice = 0;
     cartItems.forEach((item) => {
-      totalPrice += Number(item.medicine.price) * item.cartItem.quantity;
+      totalPrice += Number(item.medicine.price) * item.quantity;
     });
 
     return {
@@ -75,13 +66,10 @@ export class CartsService extends DatabaseRepository {
   }
 
   async addItemToCart(userId: string, addToCartDto: AddToCartDto) {
-    // Find or create cart
     const cart = await this.findOrCreateCart(userId);
 
-    // Verify medicine exists
     await this.medicinesService.findById(addToCartDto.medicineId);
 
-    // Check if item already in cart
     const existingItem = await this.con
       .select()
       .from(cartItemsTable)
@@ -94,7 +82,6 @@ export class CartsService extends DatabaseRepository {
       .limit(1);
 
     if (existingItem.length > 0) {
-      // Update quantity if item exists
       const newQuantity =
         existingItem[0].quantity + (addToCartDto.quantity || 1);
 
@@ -111,7 +98,6 @@ export class CartsService extends DatabaseRepository {
 
       return updatedItem;
     } else {
-      // Add new item to cart
       const [newItem] = await this.con
         .insert(cartItemsTable)
         .values({
@@ -130,13 +116,11 @@ export class CartsService extends DatabaseRepository {
     medicineId: string,
     updateDto: UpdateCartItemDto,
   ) {
-    // Find cart
     const cart = await this.findFirst(eq(cartsTable.userId, userId));
     if (!cart) {
       throw new NotFoundException('Cart not found');
     }
 
-    // Check if item exists in cart
     const existingItem = await this.con
       .select()
       .from(cartItemsTable)
@@ -152,12 +136,10 @@ export class CartsService extends DatabaseRepository {
       throw new NotFoundException('Item not found in cart');
     }
 
-    // If quantity is 0, remove item
     if (updateDto.quantity === 0) {
       return this.removeItemFromCart(userId, medicineId);
     }
 
-    // Update item quantity
     const [updatedItem] = await this.con
       .update(cartItemsTable)
       .set({ quantity: updateDto.quantity })
@@ -173,13 +155,14 @@ export class CartsService extends DatabaseRepository {
   }
 
   async removeItemFromCart(userId: string, medicineId: string) {
-    // Find cart
     const cart = await this.findFirst(eq(cartsTable.userId, userId));
+
     if (!cart) {
       throw new NotFoundException('Cart not found');
     }
 
-    // Remove item from cart
+
+    
     const deletedItem = await this.con
       .delete(cartItemsTable)
       .where(
@@ -194,17 +177,15 @@ export class CartsService extends DatabaseRepository {
   }
 
   async clearCart(userId: string) {
-    // Find cart
     const cart = await this.findFirst(eq(cartsTable.userId, userId));
     if (!cart) {
       throw new NotFoundException('Cart not found');
     }
 
-    // Remove all items from cart
     await this.con
       .delete(cartItemsTable)
       .where(eq(cartItemsTable.cartId, cart.id));
 
-    return { message: 'Cart cleared successfully' };
+    return {};
   }
 }

@@ -96,7 +96,7 @@ export class OrdersService extends DatabaseRepository {
       const orderItemsToInsert = cartWithItems.items.map((item) => ({
         orderId: order.id,
         medicineId: item.medicine.id,
-        quantity: item.cartItem.quantity,
+        quantity: item.quantity,
         price: item.medicine.price,
       }));
 

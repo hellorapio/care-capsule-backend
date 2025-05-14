@@ -10,10 +10,10 @@ import { ConfigModule } from './global/config/config.module';
 import { MeModule } from './modules/me/me.module';
 import { PharmaciesModule } from './modules/pharmacies/pharmacies.module';
 import { MedicinesModule } from './modules/medicines/medicines.module';
-import { CategoriesModule } from './modules/categories/categories.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { CartsModule } from './modules/carts/carts.module';
+import { WishlistModule } from './modules/wishlist/wishlist.module';
 
 @Module({
   imports: [
@@ -25,10 +25,10 @@ import { CartsModule } from './modules/carts/carts.module';
     MeModule,
     PharmaciesModule,
     MedicinesModule,
-    CategoriesModule,
     ReviewsModule,
     OrdersModule,
     CartsModule,
+    WishlistModule,
   ],
   providers: [
     {

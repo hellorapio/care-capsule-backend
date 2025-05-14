@@ -1,6 +1,6 @@
 {
-  "id": "bf57cf81-e7ac-4fcc-8ea9-258f807019f0",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "f3447324-5a29-41d1-8358-261cd4e1767b",
+  "prevId": "bf57cf81-e7ac-4fcc-8ea9-258f807019f0",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -1133,6 +1133,95 @@
           "nullsNotDistinct": false,
           "columns": [
             "user_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.wishlist": {
+      "name": "wishlist",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "medicine_id": {
+          "name": "medicine_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "wishlist_user_id_users_id_fk": {
+          "name": "wishlist_user_id_users_id_fk",
+          "tableFrom": "wishlist",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "wishlist_medicine_id_medicines_id_fk": {
+          "name": "wishlist_medicine_id_medicines_id_fk",
+          "tableFrom": "wishlist",
+          "tableTo": "medicines",
+          "columnsFrom": [
+            "medicine_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "wishlist_user_id_medicine_id_pk": {
+          "name": "wishlist_user_id_medicine_id_pk",
+          "columns": [
+            "user_id",
+            "medicine_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "wishlist_user_id_unique": {
+          "name": "wishlist_user_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "user_id"
+          ]
+        },
+        "wishlist_medicine_id_unique": {
+          "name": "wishlist_medicine_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "medicine_id"
           ]
         }
       },

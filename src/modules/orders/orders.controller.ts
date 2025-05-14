@@ -32,7 +32,7 @@ export class OrdersController {
     return res(data, 'Order created successfully', 201);
   }
 
-  @Patch('/:id/status')
+  @Patch('/:id')
   async updateOrderStatus(
     @Param('id') id: string,
     @Body() updateStatusDto: UpdateOrderStatusDto,

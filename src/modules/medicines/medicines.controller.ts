@@ -11,12 +11,17 @@ import {
   ParseFilePipe,
   MaxFileSizeValidator,
   FileTypeValidator,
+  Query,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { res } from 'src/utils/utils';
 import { PharmacyMedicinesService } from './pharmacy-medicine.service';
-import { CreateMedicineDto, UpdateMedicineDto } from './dtos/medicine.dto';
+import {
+  CreateMedicineDto,
+  GetMedicinesDto,
+  UpdateMedicineDto,
+} from './dtos/medicine.dto';
 // import {
 //   AddMedicineToPharmacyDto,
 //   UpdatePharmacyMedicineDto,
@@ -32,32 +37,19 @@ export class MedicinesController {
   ) {}
 
   @Get('/')
-  async getAllMedicines() {
-    const data = await this.medicinesService.findAll();
-    return res(data, 'Medicines retrieved successfully', 200);
+  async getAllMedicines(@Query() getMedicinesDto: GetMedicinesDto) {
+    const data = await this.medicinesService.findMedicines(getMedicinesDto);
+    return res(
+      data as Record<string, any> | Record<string, any>[],
+      'Medicines retrieved successfully',
+      200,
+    );
   }
-
-  // @Get('/category/:categoryId')
-  // async getMedicinesByCategory(@Param('categoryId') categoryId: string) {
-  //   const data = await this.medicinesService.findByCategory(categoryId);
-  //   return res(data, 'Medicines retrieved successfully', 200);
-  // }
 
   @Get('/:id')
   async getMedicineById(@Param('id') id: string) {
     const data = await this.medicinesService.findById(id);
     return res(data, 'Medicine retrieved successfully', 200);
-  }
-
-  @Get('/:id/pharmacies')
-  async getPharmaciesWithMedicine(@Param('id') id: string) {
-    const data =
-      await this.pharmacyMedicinesService.findPharmaciesByMedicine(id);
-    return res(
-      data,
-      'Pharmacies with this medicine retrieved successfully',
-      200,
-    );
   }
 
   @Post('/')
@@ -76,6 +68,17 @@ export class MedicinesController {
       updateMedicineDto,
     );
     return res(data, 'Medicine updated successfully', 200);
+  }
+
+  @Get('/:id/pharmacies')
+  async getPharmaciesWithMedicine(@Param('id') id: string) {
+    const data =
+      await this.pharmacyMedicinesService.findPharmaciesByMedicine(id);
+    return res(
+      data,
+      'Pharmacies with this medicine retrieved successfully',
+      200,
+    );
   }
 
   @Patch('/:id/image')
@@ -108,44 +111,4 @@ export class MedicinesController {
     const data = await this.medicinesService.deleteMedicine(id);
     return res(data, 'Medicine deleted successfully', 200);
   }
-
-  // @Post('/pharmacy/:pharmacyId/:medicineId')
-  // async addMedicineToPharmacy(
-  //   @Param('pharmacyId') pharmacyId: string,
-  //   @Param('medicineId') medicineId: string,
-  //   @Body() addMedicineDto: AddMedicineToPharmacyDto,
-  // ) {
-  //   const data = await this.pharmacyMedicinesService.addMedicineToPharmacy(
-  //     pharmacyId,
-  //     medicineId,
-  //     addMedicineDto,
-  //   );
-  //   return res(data, 'Medicine added to pharmacy successfully', 201);
-  // }
-
-  // @Patch('/pharmacy/:pharmacyId/:medicineId')
-  // async updatePharmacyMedicine(
-  //   @Param('pharmacyId') pharmacyId: string,
-  //   @Param('medicineId') medicineId: string,
-  //   @Body() updateDto: UpdatePharmacyMedicineDto,
-  // ) {
-  //   const data = await this.pharmacyMedicinesService.updatePharmacyMedicine(
-  //     pharmacyId,
-  //     medicineId,
-  //     updateDto,
-  //   );
-  //   return res(data, 'Pharmacy medicine updated successfully', 200);
-  // }
-
-  // @Delete('/pharmacy/:pharmacyId/:medicineId')
-  // async removeMedicineFromPharmacy(
-  //   @Param('pharmacyId') pharmacyId: string,
-  //   @Param('medicineId') medicineId: string,
-  // ) {
-  //   const data = await this.pharmacyMedicinesService.removeMedicineFromPharmacy(
-  //     pharmacyId,
-  //     medicineId,
-  //   );
-  //   return res(data, 'Medicine removed from pharmacy successfully', 200);
-  // }
 }

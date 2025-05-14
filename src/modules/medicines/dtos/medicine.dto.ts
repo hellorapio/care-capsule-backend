@@ -1,11 +1,29 @@
+import { Type } from 'class-transformer';
 import {
-  IsBoolean,
   IsDecimal,
+  IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
-  IsUUID,
+  Min,
 } from 'class-validator';
+
+export class GetMedicinesDto {
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  page?: number = 1;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  limit?: number = 10;
+
+  @IsOptional()
+  category?: string = 'care';
+}
 
 export class CreateMedicineDto {
   @IsNotEmpty()
@@ -18,75 +36,44 @@ export class CreateMedicineDto {
 
   @IsNotEmpty()
   @IsDecimal()
-  price: string;
+  price: number;
 
   @IsOptional()
   @IsString()
-  manufacturer?: string;
+  image?: string;
 
   @IsOptional()
   @IsString()
   substance?: string;
 
   @IsOptional()
-  @IsBoolean()
-  needsPrescription?: boolean;
-
-  @IsOptional()
   @IsString()
-  barcode?: string;
-
-  @IsOptional()
-  @IsString()
-  dosage?: string;
-
-  @IsOptional()
-  @IsString()
-  sideEffects?: string;
-
-  @IsOptional()
-  @IsUUID()
-  categoryId?: string;
+  category?: string;
 }
-
 export class UpdateMedicineDto {
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
+  @IsOptional()
   name?: string;
 
   @IsOptional()
   @IsString()
   description?: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsDecimal()
-  price?: string;
+  @IsOptional()
+  price?: number;
 
   @IsOptional()
   @IsString()
-  manufacturer?: string;
+  image?: string;
 
   @IsOptional()
   @IsString()
   substance?: string;
 
   @IsOptional()
-  @IsBoolean()
-  needsPrescription?: boolean;
-
-  @IsOptional()
   @IsString()
-  barcode?: string;
-
-  @IsOptional()
-  @IsString()
-  dosage?: string;
-
-  @IsOptional()
-  @IsString()
-  sideEffects?: string;
-
-  @IsOptional()
-  @IsUUID()
-  categoryId?: string;
+  category?: string;
 }

@@ -22,7 +22,7 @@ export class CartsController {
     return res(data, 'Cart retrieved successfully', 200);
   }
 
-  @Post('/add')
+  @Post('/')
   async addToCart(
     @User('id') userId: string,
     @Body() addToCartDto: AddToCartDto,
@@ -31,7 +31,7 @@ export class CartsController {
     return res(data, 'Item added to cart successfully', 201);
   }
 
-  @Patch('/update/:medicineId')
+  @Patch('/:cartId')
   async updateCartItem(
     @User('id') userId: string,
     @Param('medicineId') medicineId: string,
@@ -45,18 +45,18 @@ export class CartsController {
     return res(data, 'Cart item updated successfully', 200);
   }
 
-  @Delete('/remove/:medicineId')
+  @Delete('/clear')
+  async clearCart(@User('id') userId: string) {
+    const data = await this.cartsService.clearCart(userId);
+    return res(data, 'Cart cleared successfully', 200);
+  }
+
+  @Delete('/:medicineId')
   async removeFromCart(
     @User('id') userId: string,
     @Param('medicineId') medicineId: string,
   ) {
     const data = await this.cartsService.removeItemFromCart(userId, medicineId);
     return res(data, 'Item removed from cart successfully', 200);
-  }
-
-  @Delete('/clear')
-  async clearCart(@User('id') userId: string) {
-    const data = await this.cartsService.clearCart(userId);
-    return res(data, 'Cart cleared successfully', 200);
   }
 }

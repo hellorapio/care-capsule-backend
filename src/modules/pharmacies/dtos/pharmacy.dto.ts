@@ -26,8 +26,15 @@ export class CreatePharmacyDto {
   @IsNotEmpty()
   @IsEmail()
   email: string;
-}
 
+  @IsOptional()
+  @IsString()
+  image?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
+}
 export class UpdatePharmacyDto {
   @IsOptional()
   @IsString()
@@ -48,6 +55,10 @@ export class UpdatePharmacyDto {
   @IsOptional()
   @IsEmail()
   email?: string;
+
+  @IsOptional()
+  @IsString()
+  image?: string;
 
   @IsOptional()
   @IsBoolean()

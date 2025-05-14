@@ -1,7 +1,8 @@
 import { DrizzleDatabase } from './database.module';
 import { AnyPgTable, AnyPgSelect } from 'drizzle-orm/pg-core';
-import { count, SQL, eq } from 'drizzle-orm';
+import { count, SQL, eq, sql } from 'drizzle-orm';
 import { usersTable } from 'src/drizzle/schema';
+import { GetMedicinesDto } from 'src/modules/medicines/dtos/medicine.dto';
 
 export default class DatabaseRepository {
   constructor(
@@ -26,22 +27,34 @@ export default class DatabaseRepository {
     return await this.db.select().from(this.table).where(where).orderBy(sort);
   }
 
-  async findAll(): Promise<AnyPgSelect> {
-    return await this.db.select().from(this.table);
-  }
+  async findAll(
+    params: GetMedicinesDto = { page: 1, limit: 10 },
+  ): Promise<any> {
+    const page = params.page || 1;
+    const limit = params.limit || 10;
+    const offset = (page - 1) * limit;
 
-  async findAllWithPagination(
-    limit: number = 10,
-    page: number = 1,
-  ): Promise<AnyPgSelect> {
+    const data = await this.db
+      .select()
+      .from(this.table)
+      .offset(offset)
+      .limit(limit);
+
+    const countResult = await this.db
+      .select({ count: sql<number>`count(*)`.as('count') })
+      .from(this.table);
+
+    const total = Number(countResult[0].count);
+    const totalPages = Math.ceil(total / limit);
+
     return {
-      data: await this.db
-        .select()
-        .from(this.table)
-        .limit(limit)
-        .offset((page - 1) * limit),
-      count: (await this.db.select({ count: count() }).from(this.table))[0]
-        .count,
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages,
+      },
     };
   }
 

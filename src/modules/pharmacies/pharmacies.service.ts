@@ -31,15 +31,13 @@ export class PharmaciesService extends DatabaseRepository {
     );
   }
 
-  async createPharmacy(ownerId: string, createPharmacyDto: CreatePharmacyDto) {
+  async createPharmacy(createPharmacyDto: CreatePharmacyDto) {
     return this.create({
       ...createPharmacyDto,
-      ownerId,
     });
   }
 
   async updatePharmacy(id: string, updatePharmacyDto: UpdatePharmacyDto) {
-    await this.findById(id);
     const [updatedPharmacy] = await this.updateById(id, updatePharmacyDto);
     return updatedPharmacy;
   }
@@ -62,7 +60,6 @@ export class PharmaciesService extends DatabaseRepository {
   }
 
   async deletePharmacy(id: string) {
-    await this.findById(id);
     return this.deleteById(id);
   }
 }

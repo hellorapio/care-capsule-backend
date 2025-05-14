@@ -31,27 +31,21 @@ export class PharmaciesController {
     return res(data, 'Pharmacies retrieved successfully', 200);
   }
 
-  @Get('/my-pharmacies')
-  async getMyPharmacies(@User('id') userId: string) {
-    const data = await this.pharmaciesService.findByOwnerId(userId);
-    return res(data, 'User pharmacies retrieved successfully', 200);
-  }
-
   @Get('/:id')
   async getPharmacyById(@Param('id') id: string) {
     const data = await this.pharmaciesService.findById(id);
     return res(data, 'Pharmacy retrieved successfully', 200);
   }
 
+  @Get('/my-pharmacies')
+  async getMyPharmacies(@User('id') userId: string) {
+    const data = await this.pharmaciesService.findByOwnerId(userId);
+    return res(data, 'User pharmacies retrieved successfully', 200);
+  }
+
   @Post('/')
-  async createPharmacy(
-    @User('id') userId: string,
-    @Body() createPharmacyDto: CreatePharmacyDto,
-  ) {
-    const data = await this.pharmaciesService.createPharmacy(
-      userId,
-      createPharmacyDto,
-    );
+  async createPharmacy(@Body() createPharmacyDto: CreatePharmacyDto) {
+    const data = await this.pharmaciesService.createPharmacy(createPharmacyDto);
     return res(data, 'Pharmacy created successfully', 201);
   }
 

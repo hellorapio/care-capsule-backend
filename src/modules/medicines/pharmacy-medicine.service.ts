@@ -37,7 +37,6 @@ export class PharmacyMedicinesService extends DatabaseRepository {
           description: medicinesTable.description,
           image: medicinesTable.image,
           substance: medicinesTable.substance,
-          categoryId: medicinesTable.categoryId,
         },
       })
       .from(pharmacyMedicinesTable)

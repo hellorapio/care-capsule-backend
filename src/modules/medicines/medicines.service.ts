@@ -1,5 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { medicinesTable } from 'src/drizzle/schema';
 import {
   DRIZZLE_DB,
@@ -7,17 +7,52 @@ import {
 } from 'src/global/database/database.module';
 import DatabaseRepository from 'src/global/database/database.repository';
 import { UploadService } from 'src/global/upload/upload.service';
-import { CreateMedicineDto, UpdateMedicineDto } from './dtos/medicine.dto';
-import { CategoriesService } from '../categories/categories.service';
+import {
+  CreateMedicineDto,
+  GetMedicinesDto,
+  UpdateMedicineDto,
+} from './dtos/medicine.dto';
 
 @Injectable()
 export class MedicinesService extends DatabaseRepository {
   constructor(
     @Inject(DRIZZLE_DB) private readonly con: DrizzleDatabase,
     private readonly uploadService: UploadService,
-    private readonly categoriesService: CategoriesService,
   ) {
     super(medicinesTable, con);
+  }
+
+  async findMedicines(
+    params: GetMedicinesDto = { page: 1, limit: 10, category: 'care' },
+  ): Promise<any> {
+    const page = params.page || 1;
+    const limit = params.limit || 10;
+    const offset = (page - 1) * limit;
+
+    const data = await this.con.query.medicinesTable.findMany({
+      where: sql`${this.table['category']} = ${params.category || 'care'}`,
+      orderBy: sql`${this.table['createdAt']} DESC`,
+      limit,
+      offset,
+    });
+
+    const countResult = await this.con
+      .select({ count: sql<number>`count(*)`.as('count') })
+      .from(this.table)
+      .where(sql`${this.table['category']} = ${params.category || 'care'}`);
+
+    const total = Number(countResult[0].count);
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages,
+      },
+    };
   }
 
   async findById(id: string) {
@@ -26,26 +61,12 @@ export class MedicinesService extends DatabaseRepository {
     return medicine;
   }
 
-  async findByCategory(categoryId: string) {
-    return this.findManyWithoutFilter(
-      eq(medicinesTable.categoryId, categoryId),
-      eq(medicinesTable.createdAt, medicinesTable.createdAt),
-    );
-  }
-
   async createMedicine(createMedicineDto: CreateMedicineDto) {
-    if (createMedicineDto.categoryId) {
-      await this.categoriesService.findById(createMedicineDto.categoryId);
-    }
     return this.create(createMedicineDto);
   }
 
   async updateMedicine(id: string, updateMedicineDto: UpdateMedicineDto) {
     await this.findById(id);
-
-    if (updateMedicineDto.categoryId) {
-      await this.categoriesService.findById(updateMedicineDto.categoryId);
-    }
 
     const [updatedMedicine] = await this.updateById(id, updateMedicineDto);
     return updatedMedicine;
@@ -61,7 +82,6 @@ export class MedicinesService extends DatabaseRepository {
   }
 
   async deleteMedicine(id: string) {
-    await this.findById(id);
     return this.deleteById(id);
   }
 }
