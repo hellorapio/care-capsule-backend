@@ -15,6 +15,13 @@
       "when": 1747169248951,
       "tag": "0001_chief_vin_gonzales",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1747248324104,
+      "tag": "0002_confused_la_nuit",
+      "breakpoints": true
     }
   ]
 }

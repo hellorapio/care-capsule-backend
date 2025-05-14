@@ -129,12 +129,10 @@ export const wishlistTable = pgTable(
   {
     userId: uuid('user_id')
       .references(() => usersTable.id, { onDelete: 'cascade' })
-      .notNull()
-      .unique(),
+      .notNull(),
     medicineId: uuid('medicine_id')
       .references(() => medicinesTable.id, { onDelete: 'cascade' })
-      .notNull()
-      .unique(),
+      .notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
     updatedAt: timestamp('updated_at')
       .defaultNow()
