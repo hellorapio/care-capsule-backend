@@ -16,7 +16,7 @@ import RefreshDTO from './dtos/refresh.dto';
 import ChangePasswordDTO from './dtos/change-password.dto';
 import User from 'src/decorators/User.decorator';
 import { res } from 'src/utils/utils';
-import { ForgotDto } from './dtos/reset-pass.dto';
+import { ForgotDto, ResetDto, VerifyDto } from './dtos/reset-pass.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -50,7 +50,7 @@ export class AuthController {
 
   @Post('/forgot')
   @Public()
-  @HttpCode(HttpStatus.CREATED)
+  @HttpCode(HttpStatus.OK)
   async forgot(@Body() forgotDto: ForgotDto) {
     const code = await this.authService.forgotPass(forgotDto.email);
     return res({ code: code.code }, 'Code Requested successfully', 201);
@@ -58,25 +58,18 @@ export class AuthController {
 
   @Post('/verify')
   @Public()
-  @HttpCode(HttpStatus.CREATED)
+  @HttpCode(HttpStatus.OK)
   async verify(@Body() verifyDto: VerifyDto) {
-    const code = await this.authService.verify(verifyDto.email);
-    return res({ code: code.code }, 'Code Requested successfully', 201);
+    await this.authService.verify(verifyDto);
+    return res({}, 'Code Verified successfully', 201);
   }
 
   @Post('/reset')
   @Public()
-  @HttpCode(HttpStatus.CREATED)
-  async reset(@Body() resetDto: ResetDTO) {
-    const { tokens, user } = await this.authService.signup(
-      signupDto.name,
-      signupDto.email,
-      signupDto.password,
-    );
-
-    await this.authService.createUserSettings(user.id);
-    await this.authService.createUserCart(user.id);
-    return res({ tokens, user }, 'User created successfully', 201);
+  @HttpCode(HttpStatus.OK)
+  async reset(@Body() resetDto: ResetDto) {
+    await this.authService.resetPass(resetDto);
+    return res({}, 'Password Resetted successfully', 201);
   }
 
   @Post('/refresh')

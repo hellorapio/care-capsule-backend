@@ -162,6 +162,10 @@ export class AuthService {
       throw new NotFoundException('User not found');
     }
 
+    await this.db
+      .delete(verificationsTable)
+      .where(eq(verificationsTable.userId, user.id));
+
     const code = await this.db
       .insert(verificationsTable)
       .values({
@@ -190,10 +194,7 @@ export class AuthService {
         and(
           eq(verificationsTable.userId, user.id),
           eq(verificationsTable.code, verify.code),
-          gt(
-            verificationsTable.expiresAt,
-            new Date(Date.now() + 5 * 60 * 1000),
-          ),
+          gt(verificationsTable.expiresAt, new Date()),
         ),
       );
 
@@ -219,10 +220,7 @@ export class AuthService {
         and(
           eq(verificationsTable.userId, user.id),
           eq(verificationsTable.code, reset.code),
-          gt(
-            verificationsTable.expiresAt,
-            new Date(Date.now() + 5 * 60 * 1000),
-          ),
+          gt(verificationsTable.expiresAt, new Date()),
         ),
       );
 
