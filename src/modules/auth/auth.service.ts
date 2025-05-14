@@ -235,6 +235,10 @@ export class AuthService {
       })
       .where(eq(usersTable.id, user.id));
 
+    await this.db
+      .delete(verificationsTable)
+      .where(eq(verificationsTable.userId, user.id));
+
     return code[0];
   }
 
