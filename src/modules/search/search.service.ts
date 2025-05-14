@@ -19,31 +19,44 @@ export class SearchService extends DatabaseRepository {
         like(pharmaciesTable.name, `%${query}%`),
         like(pharmaciesTable.address, `%${query}%`),
       ),
+      limit: 10,
+      columns: {
+        id: true,
+        name: true,
+        image: true,
+      },
     });
+
     const medicines = await this.con.query.medicinesTable.findMany({
       where: or(
         like(medicinesTable.name, `%${query}%`),
         like(medicinesTable.substance, `%${query}%`),
       ),
+      limit: 10,
+      columns: {
+        id: true,
+        name: true,
+        image: true,
+      },
     });
 
-    medicines.map((medicine) => {
-      return {
-        name: medicine.name,
-        id: medicine.id,
-        image: medicine.image,
-        type: 'medicine',
-      };
-    });
+    // medicines.map((medicine) => {
+    //   return {
+    //     name: medicine.name,
+    //     id: medicine.id,
+    //     image: medicine.image,
+    //     type: 'medicine',
+    //   };
+    // });
 
-    pharmacies.map((pharmacy) => {
-      return {
-        name: pharmacy.name,
-        id: pharmacy.id,
-        image: pharmacy.image,
-        type: 'pharmacy',
-      };
-    });
+    // pharmacies.map((pharmacy) => {
+    //   return {
+    //     name: pharmacy.name,
+    //     id: pharmacy.id,
+    //     image: pharmacy.image,
+    //     type: 'pharmacy',
+    //   };
+    // });
 
     return { pharmacies, medicines };
   }
