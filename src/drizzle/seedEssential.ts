@@ -17,7 +17,7 @@ const pharmaciesData = [
     phone: '(212) 555-1234',
     email: 'contact@medicare-pharmacy.com',
     image:
-      'https://www.frontsigns.com/wp-content/uploads/2023/06/glass-door-pharmacy-design.jpg',
+      'https://www.enigmaglobal.com/wp-content/uploads/2024/01/Costas-Constantopoulos-Pharmacy-4.jpg',
     isActive: true,
   },
   {
@@ -28,7 +28,7 @@ const pharmaciesData = [
     phone: '(310) 555-2345',
     email: 'info@healthfirstdrugs.com',
     image:
-      'https://www.frontsigns.com/wp-content/uploads/2023/06/glass-door-pharmacy-design.jpg',
+      'https://www.enigmaglobal.com/wp-content/uploads/2024/01/Costas-Constantopoulos-Pharmacy-4.jpg',
     isActive: true,
   },
   {
@@ -39,7 +39,7 @@ const pharmaciesData = [
     phone: '(312) 555-3456',
     email: 'service@quickscript.com',
     image:
-      'https://www.frontsigns.com/wp-content/uploads/2023/06/glass-door-pharmacy-design.jpg',
+      'https://www.enigmaglobal.com/wp-content/uploads/2024/01/Costas-Constantopoulos-Pharmacy-4.jpg',
     isActive: true,
   },
   {
@@ -50,7 +50,7 @@ const pharmaciesData = [
     phone: '(720) 555-4567',
     email: 'care@wellnessapothecary.com',
     image:
-      'https://www.frontsigns.com/wp-content/uploads/2023/06/glass-door-pharmacy-design.jpg',
+      'https://www.enigmaglobal.com/wp-content/uploads/2024/01/Costas-Constantopoulos-Pharmacy-4.jpg',
     isActive: true,
   },
   {
@@ -61,7 +61,7 @@ const pharmaciesData = [
     phone: '(206) 555-5678',
     email: 'help@citycenterpharm.com',
     image:
-      'https://www.frontsigns.com/wp-content/uploads/2023/06/glass-door-pharmacy-design.jpg',
+      'https://www.enigmaglobal.com/wp-content/uploads/2024/01/Costas-Constantopoulos-Pharmacy-4.jpg',
     isActive: true,
   },
   {
@@ -72,7 +72,7 @@ const pharmaciesData = [
     phone: '(614) 555-6789',
     email: 'support@familycaredrugs.com',
     image:
-      'https://www.frontsigns.com/wp-content/uploads/2023/06/glass-door-pharmacy-design.jpg',
+      'https://www.enigmaglobal.com/wp-content/uploads/2024/01/Costas-Constantopoulos-Pharmacy-4.jpg',
     isActive: true,
   },
   {
@@ -83,7 +83,7 @@ const pharmaciesData = [
     phone: '(617) 555-7890',
     email: 'unihealth@college.edu',
     image:
-      'https://www.frontsigns.com/wp-content/uploads/2023/06/glass-door-pharmacy-design.jpg',
+      'https://www.enigmaglobal.com/wp-content/uploads/2024/01/Costas-Constantopoulos-Pharmacy-4.jpg',
     isActive: true,
   },
   {
@@ -94,7 +94,7 @@ const pharmaciesData = [
     phone: '(323) 555-8901',
     email: 'concierge@sunsetdrugs.com',
     image:
-      'https://www.frontsigns.com/wp-content/uploads/2023/06/glass-door-pharmacy-design.jpg',
+      'https://www.enigmaglobal.com/wp-content/uploads/2024/01/Costas-Constantopoulos-Pharmacy-4.jpg',
     isActive: true,
   },
   {
@@ -105,7 +105,7 @@ const pharmaciesData = [
     phone: '(214) 555-9012',
     email: 'hello@neighborhoodhealthmart.com',
     image:
-      'https://www.frontsigns.com/wp-content/uploads/2023/06/glass-door-pharmacy-design.jpg',
+      'https://www.enigmaglobal.com/wp-content/uploads/2024/01/Costas-Constantopoulos-Pharmacy-4.jpg',
     isActive: true,
   },
   {
@@ -116,7 +116,7 @@ const pharmaciesData = [
     phone: '(305) 555-0123',
     email: 'travel@bayviewpharmacy.com',
     image:
-      'https://www.frontsigns.com/wp-content/uploads/2023/06/glass-door-pharmacy-design.jpg',
+      'https://www.enigmaglobal.com/wp-content/uploads/2024/01/Costas-Constantopoulos-Pharmacy-4.jpg',
     isActive: true,
   },
   {
@@ -127,7 +127,7 @@ const pharmaciesData = [
     phone: '(317) 555-1234',
     email: 'quick@expressrx.com',
     image:
-      'https://www.frontsigns.com/wp-content/uploads/2023/06/glass-door-pharmacy-design.jpg',
+      'https://www.enigmaglobal.com/wp-content/uploads/2024/01/Costas-Constantopoulos-Pharmacy-4.jpg',
     isActive: true,
   },
   {
@@ -138,7 +138,7 @@ const pharmaciesData = [
     phone: '(503) 555-2345',
     email: 'eco@greencrosspharm.com',
     image:
-      'https://www.frontsigns.com/wp-content/uploads/2023/06/glass-door-pharmacy-design.jpg',
+      'https://www.enigmaglobal.com/wp-content/uploads/2024/01/Costas-Constantopoulos-Pharmacy-4.jpg',
     isActive: true,
   },
   {
@@ -149,7 +149,7 @@ const pharmaciesData = [
     phone: '(480) 555-3456',
     email: 'care@seniorcarepharm.com',
     image:
-      'https://www.frontsigns.com/wp-content/uploads/2023/06/glass-door-pharmacy-design.jpg',
+      'https://www.enigmaglobal.com/wp-content/uploads/2024/01/Costas-Constantopoulos-Pharmacy-4.jpg',
     isActive: false,
   },
   {
@@ -160,7 +160,7 @@ const pharmaciesData = [
     phone: '(404) 555-4567',
     email: 'families@kidspharmacy.com',
     image:
-      'https://www.frontsigns.com/wp-content/uploads/2023/06/glass-door-pharmacy-design.jpg',
+      'https://www.enigmaglobal.com/wp-content/uploads/2024/01/Costas-Constantopoulos-Pharmacy-4.jpg',
     isActive: true,
   },
   {
@@ -171,7 +171,7 @@ const pharmaciesData = [
     phone: '(702) 555-5678',
     email: 'anytime@247pharmacyplus.com',
     image:
-      'https://www.frontsigns.com/wp-content/uploads/2023/06/glass-door-pharmacy-design.jpg',
+      'https://www.enigmaglobal.com/wp-content/uploads/2024/01/Costas-Constantopoulos-Pharmacy-4.jpg',
     isActive: true,
   },
 ];
@@ -185,10 +185,14 @@ const pharmaciesData = [
     database: process.env.DB_NAME,
   });
 
+  const transformed = medicinesData.filter(
+    (med: { image: string }) => !med.image.startsWith('https://www.makatimed'),
+  );
+
   const db = drizzle(pool, { schema });
   const da = await db
     .insert(schema.medicinesTable)
-    .values(medicinesData)
+    .values(transformed)
     .returning();
   const da2 = await db
     .insert(schema.pharmaciesTable)
