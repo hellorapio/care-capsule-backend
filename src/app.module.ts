@@ -15,6 +15,7 @@ import { OrdersModule } from './modules/orders/orders.module';
 import { CartsModule } from './modules/carts/carts.module';
 import { WishlistModule } from './modules/wishlist/wishlist.module';
 import { SearchModule } from './modules/search/search.module';
+import { AiModule } from './modules/ai/ai.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { SearchModule } from './modules/search/search.module';
     CartsModule,
     WishlistModule,
     SearchModule,
+    AiModule,
   ],
   providers: [
     {
