@@ -17,9 +17,6 @@ services:
         condition: on-failure
         delay: 5s
         max_attempts: 3
-      placement:
-        constraints:
-          - node.role == worker
       resources:
         limits:
           cpus: '1.0'
@@ -58,9 +55,6 @@ services:
         condition: on-failure
         delay: 10s
         max_attempts: 3
-      placement:
-        constraints:
-          - node.role == manager
       resources:
         limits:
           cpus: '2.0'
