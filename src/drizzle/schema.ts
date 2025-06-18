@@ -77,6 +77,7 @@ export const medicinesTable = pgTable('medicines', {
   image: text('image'),
   substance: varchar('substance', { length: 100 }),
   category: varchar('category', { length: 100 }),
+  stock: boolean('stock').default(true),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
   updatedAt: timestamp('updated_at')
     .defaultNow()
