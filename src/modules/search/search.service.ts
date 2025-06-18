@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { like, or } from 'drizzle-orm';
+import { ilike, or } from 'drizzle-orm';
 import { medicinesTable, pharmaciesTable } from 'src/drizzle/schema';
 import {
   DRIZZLE_DB,
@@ -14,10 +14,12 @@ export class SearchService extends DatabaseRepository {
   }
 
   async search(query: string) {
+    const searchTerm = `%${query}%`;
+
     const pharmacies = await this.con.query.pharmaciesTable.findMany({
       where: or(
-        like(pharmaciesTable.name, `%${query}%`),
-        like(pharmaciesTable.address, `%${query}%`),
+        ilike(pharmaciesTable.name, searchTerm),
+        ilike(pharmaciesTable.address, searchTerm),
       ),
       limit: 10,
       columns: {
@@ -29,8 +31,8 @@ export class SearchService extends DatabaseRepository {
 
     const medicines = await this.con.query.medicinesTable.findMany({
       where: or(
-        like(medicinesTable.name, `%${query}%`),
-        like(medicinesTable.substance, `%${query}%`),
+        ilike(medicinesTable.name, searchTerm),
+        ilike(medicinesTable.substance, searchTerm),
       ),
       limit: 10,
       columns: {
