@@ -34,14 +34,13 @@ jobs:
           scp -i ~/.ssh/id_rsa compose.yml $SSH_USER@$SSH_HOST:~/
           scp -i ~/.ssh/id_rsa Dockerfile.nginx $SSH_USER@$SSH_HOST:~/
           scp -i ~/.ssh/id_rsa nginx.conf $SSH_USER@$SSH_HOST:~/
-          scp -i ~/.ssh/id_rsa update-stack.sh $SSH_USER@$SSH_HOST:~/
 
           # Copy .env file if it exists
           if [ -f .env ]; then
             scp -i ~/.ssh/id_rsa .env $SSH_USER@$SSH_HOST:~/
           fi
 
-      - name: Deploy with Docker Swarm Rolling Update
+      - name: Login to Azure Container Registry on VM and Deploy
         env:
           SSH_USER: ${{ secrets.SSH_USERNAME }}
           SSH_HOST: ${{ secrets.SSH_IP }}
@@ -49,79 +48,41 @@ jobs:
           ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
           ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
         run: |
-          # Get the git commit SHA for image tagging
-          COMMIT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
-          IMAGE_TAG="build-${GITHUB_RUN_NUMBER}-${COMMIT_SHA}"
-
           ssh -i ~/.ssh/id_rsa $SSH_USER@$SSH_HOST << 'EOF'
             # Login to Azure Container Registry
             echo "${{ secrets.ACR_PASSWORD }}" | sudo docker login ${{ secrets.ACR_LOGIN_SERVER }} -u ${{ secrets.ACR_USERNAME }} --password-stdin
             
-            # Make update script executable
-            chmod +x ~/update-stack.sh
+            # Pull latest images
+            echo "📥 Pulling latest images..."
+            sudo docker compose pull
             
-            # Initialize Docker Swarm if not already initialized
-            if ! sudo docker info | grep -q "Swarm: active"; then
-              echo "🔧 Initializing Docker Swarm..."
-              sudo docker swarm init || echo "⚠️  Swarm already initialized or failed to initialize"
-            fi
+            # Graceful update
+            echo "🔄 Starting graceful update..."
             
-            # Check if stack exists
-            if ! sudo docker stack ls | grep -q "carecapsule"; then
-              echo "🚀 Initial deployment of stack..."
-              sudo docker stack deploy -c ~/compose.yml carecapsule
-              echo "⏳ Waiting for initial deployment to stabilize..."
-              sleep 60
+            # Update node service with zero downtime
+            sudo docker compose up -d --no-deps node
+            
+            # Wait for health check
+            echo "⏳ Waiting for services to be healthy..."
+            sleep 45
+            
+            # Check if services are healthy
+            if sudo docker compose ps | grep -q "Up (healthy)"; then
+              echo "✅ Services are healthy"
             else
-              echo "📦 Stack exists, performing rolling update..."
-              
-              # Pull the latest image first
-              sudo docker pull ${{ secrets.ACR_LOGIN_SERVER }}/carecapsule:latest
-              
-              # Run rolling update using the bash script
-              echo "🔄 Starting rolling update with script..."
-              sudo bash ~/update-stack.sh carecapsule latest service
-              
-              # Wait for services to be updated
-              echo "⏳ Waiting for rolling update to complete..."
-              sleep 90
+              echo "⚠️ Services may not be fully healthy yet"
+              sudo docker compose ps
             fi
             
-            # Verify deployment status
-            echo "📊 Final deployment status:"
-            sudo docker stack services carecapsule
-            echo ""
-            echo "🔍 Service details:"
-            sudo docker service ls
-            echo ""
-            echo "📋 Node service tasks:"
-            sudo docker service ps carecapsule_node --no-trunc
+            # Update nginx (quick restart)
+            sudo docker compose up -d --no-deps nginx
             
-            # Health check
-            echo "🏥 Health check (waiting for services to be ready)..."
-            for i in {1..12}; do
-              if sudo docker service ls --format "table {{.NAME}}\t{{.REPLICAS}}" | grep carecapsule_node | grep -q "2/2"; then
-                echo "✅ All services are healthy!"
-                break
-              else
-                echo "⏳ Waiting for services... ($i/12)"
-                sleep 10
-              fi
-            done
-            
-            # Cleanup old images and containers
-            echo "🧹 Cleaning up old resources..."
-            sudo docker system prune -f --filter "until=24h"
+            # Cleanup old images
+            echo "🧹 Cleaning up..."
+            sudo docker image prune -f
             
             echo "🎉 Deployment completed successfully!"
+            
+            # Show final status
+            sudo docker compose ps
           EOF
-
-      - name: Deployment Summary
-        if: always()
-        run: |
-          echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
-          echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Run Number**: ${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Deployment Method**: Docker Swarm Rolling Update" >> $GITHUB_STEP_SUMMARY
-          echo "- **Script Used**: update-stack.sh" >> $GITHUB_STEP_SUMMARY
-          echo "- **Update Method**: service" >> $GITHUB_STEP_SUMMARY

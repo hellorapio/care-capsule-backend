@@ -1,42 +1,16 @@
-version: '3.8'
-
 services:
   node:
-    image: carecapsule.azurecr.io/carecapsule:${CARECAPSULE_TAG:-latest}
+    image: carecapsule.azurecr.io/carecapsule:latest
     env_file:
       - ./.env
+    restart: always
     ports:
       - '3000:3000'
     depends_on:
       - db
     networks:
       - backend
-    deploy:
-      replicas: 2
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 512M
-        reservations:
-          cpus: '0.5'
-          memory: 256M
-      update_config:
-        parallelism: 1
-        delay: 30s
-        failure_action: rollback
-        monitor: 60s
-        max_failure_ratio: 0.3
-        order: start-first
-      rollback_config:
-        parallelism: 1
-        delay: 0s
-        failure_action: pause
-        monitor: 60s
-        max_failure_ratio: 0.3
+
   db:
     image: postgres:17
     environment:
@@ -49,24 +23,10 @@ services:
       - postgres-data:/var/lib/postgresql/data
     networks:
       - backend
-    deploy:
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-        delay: 10s
-        max_attempts: 3
-      resources:
-        limits:
-          cpus: '2.0'
-          memory: 1G
-        reservations:
-          cpus: '1.0'
-          memory: 512M
 
 volumes:
   postgres-data:
 
 networks:
   backend:
-    driver: overlay
-    attachable: true
+    driver: bridge
