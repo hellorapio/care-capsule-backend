@@ -31,7 +31,7 @@ export class CartsController {
     return res(data, 'Item added to cart successfully', 201);
   }
 
-  @Patch('/:cartId')
+  @Patch('/:medicineId')
   async updateCartItem(
     @User('id') userId: string,
     @Param('medicineId') medicineId: string,

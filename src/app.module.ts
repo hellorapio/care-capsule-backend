@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { APP_GUARD } from '@nestjs/core';
 import JwtGuard from './guards/jwt.guard';
+import RolesGuard from './guards/roles.guard';
 import { DatabaseModule } from './global/database/database.module';
 import { UploadModule } from './global/upload/upload.module';
 import { AuthModule } from './modules/auth/auth.module';
@@ -16,6 +17,7 @@ import { CartsModule } from './modules/carts/carts.module';
 import { WishlistModule } from './modules/wishlist/wishlist.module';
 import { SearchModule } from './modules/search/search.module';
 import { AiModule } from './modules/ai/ai.module';
+import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
   imports: [
@@ -33,6 +35,7 @@ import { AiModule } from './modules/ai/ai.module';
     WishlistModule,
     SearchModule,
     AiModule,
+    AdminModule,
   ],
   providers: [
     {
