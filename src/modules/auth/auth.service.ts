@@ -17,6 +17,7 @@ import {
 import { JwtService } from 'src/global/jwt/jwt.service';
 import { otpCode } from 'src/utils/utils';
 import { ResetDto, VerifyDto } from './dtos/reset-pass.dto';
+import { UserRole } from 'src/types';
 
 @Injectable()
 export class AuthService {
@@ -55,8 +56,7 @@ export class AuthService {
 
     return { tokens, user: userWithoutPassword };
   }
-
-  async signup(name: string, email: string, password: string) {
+  async signup(name: string, email: string, password: string, role?: UserRole) {
     const existingUser = await this.db.query.usersTable.findFirst({
       where: eq(usersTable.email, email),
     });
@@ -73,7 +73,7 @@ export class AuthService {
         name,
         email,
         password: hashedPassword,
-        role: 'user',
+        role: role || 'user',
       })
       .returning();
 

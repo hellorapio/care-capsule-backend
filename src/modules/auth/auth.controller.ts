@@ -32,7 +32,6 @@ export class AuthController {
     );
     return res({ tokens, user }, 'Logged in successfully', 200);
   }
-
   @Post('/signup')
   @Public()
   @HttpCode(HttpStatus.CREATED)
@@ -41,6 +40,7 @@ export class AuthController {
       signupDto.name,
       signupDto.email,
       signupDto.password,
+      signupDto.role,
     );
 
     await this.authService.createUserSettings(user.id);

@@ -64,7 +64,7 @@ jobs:
             
             # Wait for health check
             echo "⏳ Waiting for services to be healthy..."
-            sleep 45
+            sleep 30
             
             # Check if services are healthy
             if sudo docker compose ps | grep -q "Up (healthy)"; then
@@ -73,9 +73,6 @@ jobs:
               echo "⚠️ Services may not be fully healthy yet"
               sudo docker compose ps
             fi
-            
-            # Update nginx (quick restart)
-            sudo docker compose up -d --no-deps nginx
             
             # Cleanup old images
             echo "🧹 Cleaning up..."

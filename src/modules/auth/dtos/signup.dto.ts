@@ -1,4 +1,5 @@
-import { IsEmail, IsNotEmpty, MinLength, MaxLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, MinLength, MaxLength, IsOptional, IsIn } from 'class-validator';
+import { UserRole } from 'src/types';
 
 export default class SignupDTO {
   @IsNotEmpty({ message: 'Name is required' })
@@ -13,4 +14,8 @@ export default class SignupDTO {
   @IsNotEmpty({ message: 'Password is required' })
   @MinLength(6, { message: 'Password must be at least 6 characters long' })
   password: string;
+
+  @IsOptional()
+  @IsIn(['user', 'admin', 'pharmacy_owner'], { message: 'Role must be one of: user, admin, pharmacy_owner' })
+  role?: UserRole;
 }
